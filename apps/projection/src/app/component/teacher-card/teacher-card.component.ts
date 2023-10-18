@@ -4,14 +4,20 @@ import { TeacherStore } from '../../data-access/teacher.store';
 import { CardType } from '../../model/card.model';
 import { Teacher } from '../../model/teacher.model';
 import { CardComponent } from '../../ui/card/card.component';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-teacher-card',
-  template: `<app-card
-    [list]="teachers"
-    [type]="cardType"
-    customClass="bg-light-red"
-  ></app-card>`,
+  template: `
+    <app-card [list]="teachers" [type]="cardType" customClass="bg-light-red">
+      <img src="assets/img/teacher.png" width="200px" />
+      <ng-template #listView let-item>
+        <app-list-item (deleteEvent)="deleteItem(item.id)">
+          {{ item.firstname }}
+        </app-list-item>
+      </ng-template>
+    </app-card>
+  `,
   styles: [
     `
       ::ng-deep .bg-light-red {
@@ -20,7 +26,7 @@ import { CardComponent } from '../../ui/card/card.component';
     `,
   ],
   standalone: true,
-  imports: [CardComponent],
+  imports: [CardComponent, ListItemComponent],
 })
 export class TeacherCardComponent implements OnInit {
   teachers: Teacher[] = [];
@@ -32,5 +38,8 @@ export class TeacherCardComponent implements OnInit {
     this.http.fetchTeachers$.subscribe((t) => this.store.addAll(t));
 
     this.store.teachers$.subscribe((t) => (this.teachers = t));
+  }
+  deleteItem(id: number): void {
+    this.store.deleteOne(id);
   }
 }

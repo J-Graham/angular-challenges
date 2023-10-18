@@ -4,14 +4,20 @@ import { StudentStore } from '../../data-access/student.store';
 import { CardType } from '../../model/card.model';
 import { Student } from '../../model/student.model';
 import { CardComponent } from '../../ui/card/card.component';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-student-card',
-  template: `<app-card
-    [list]="students"
-    [type]="cardType"
-    customClass="bg-light-green"
-  ></app-card>`,
+  template: `
+    <app-card [list]="students" [type]="cardType" customClass="bg-light-green">
+      <img src="assets/img/student.webp" width="200px" />
+      <ng-template #listView let-item>
+        <app-list-item (deleteEvent)="deleteItem(item.id)">
+          {{ item.firstname }}
+        </app-list-item>
+      </ng-template>
+    </app-card>
+  `,
   standalone: true,
   styles: [
     `
@@ -20,7 +26,7 @@ import { CardComponent } from '../../ui/card/card.component';
       }
     `,
   ],
-  imports: [CardComponent],
+  imports: [CardComponent, ListItemComponent],
 })
 export class StudentCardComponent implements OnInit {
   students: Student[] = [];
@@ -32,5 +38,9 @@ export class StudentCardComponent implements OnInit {
     this.http.fetchStudents$.subscribe((s) => this.store.addAll(s));
 
     this.store.students$.subscribe((s) => (this.students = s));
+  }
+
+  deleteItem(id: number): void {
+    this.store.deleteOne(id);
   }
 }
