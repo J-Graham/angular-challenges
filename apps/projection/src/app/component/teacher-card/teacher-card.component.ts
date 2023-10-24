@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FakeHttpService } from '../../data-access/fake-http.service';
+import {
+  FakeHttpService,
+  randTeacher,
+} from '../../data-access/fake-http.service';
 import { TeacherStore } from '../../data-access/teacher.store';
-import { CardType } from '../../model/card.model';
 import { Teacher } from '../../model/teacher.model';
 import { CardComponent } from '../../ui/card/card.component';
 import { ListItemComponent } from '../../ui/list-item/list-item.component';
@@ -9,7 +11,10 @@ import { ListItemComponent } from '../../ui/list-item/list-item.component';
 @Component({
   selector: 'app-teacher-card',
   template: `
-    <app-card [list]="teachers" [type]="cardType" customClass="bg-light-red">
+    <app-card
+      [list]="teachers"
+      (addEvent)="addTeacher()"
+      customClass="bg-light-red">
       <img src="assets/img/teacher.png" width="200px" />
       <ng-template #listView let-item>
         <app-list-item (deleteEvent)="deleteItem(item.id)">
@@ -30,7 +35,6 @@ import { ListItemComponent } from '../../ui/list-item/list-item.component';
 })
 export class TeacherCardComponent implements OnInit {
   teachers: Teacher[] = [];
-  cardType = CardType.TEACHER;
 
   constructor(private http: FakeHttpService, private store: TeacherStore) {}
 
@@ -41,5 +45,8 @@ export class TeacherCardComponent implements OnInit {
   }
   deleteItem(id: number): void {
     this.store.deleteOne(id);
+  }
+  addTeacher(): void {
+    this.store.addOne(randTeacher());
   }
 }

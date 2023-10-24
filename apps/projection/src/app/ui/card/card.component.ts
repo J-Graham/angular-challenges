@@ -1,8 +1,12 @@
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { Component, ContentChild, Input, TemplateRef } from '@angular/core';
-import { randStudent, randTeacher } from '../../data-access/fake-http.service';
-import { StudentStore } from '../../data-access/student.store';
-import { TeacherStore } from '../../data-access/teacher.store';
+import {
+  Component,
+  ContentChild,
+  EventEmitter,
+  Input,
+  Output,
+  TemplateRef,
+} from '@angular/core';
 import { CardType } from '../../model/card.model';
 import { ListItemComponent } from '../list-item/list-item.component';
 
@@ -14,20 +18,11 @@ import { ListItemComponent } from '../list-item/list-item.component';
 })
 export class CardComponent {
   @Input() list: any[] | null = null;
-  @Input() type!: CardType;
   @Input() customClass = '';
+  @Output() addEvent = new EventEmitter();
   CardType = CardType;
   @ContentChild('listView') listView!: TemplateRef<any>;
-  constructor(
-    private teacherStore: TeacherStore,
-    private studentStore: StudentStore
-  ) {}
-
   addNewItem() {
-    if (this.type === CardType.TEACHER) {
-      this.teacherStore.addOne(randTeacher());
-    } else if (this.type === CardType.STUDENT) {
-      this.studentStore.addOne(randStudent());
-    }
+    this.addEvent.emit();
   }
 }
